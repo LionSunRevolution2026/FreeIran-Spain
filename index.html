@@ -14,25 +14,33 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Email Campaign</title>
+
+  <meta property="og:title" content="Spain email campaign">
+  <meta property="og:description" content="Send email to Spanish parliament members">
+  <meta property="og:image" content="https://LionSunRevolution2026.github.io/FreeIran-Spain/Spain.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://LionSunRevolution2026.github.io/FreeIran-Spain/">
+
   <style>
     :root{
       --bg0:#07131c; --bg1:#071a26; --bg2:#061018;
       --card0:#0e2533; --card1:#0b1f2c;
       --border:rgba(255,255,255,.10);
       --text:#e8f2ff;
-      --muted:rgba(232,242,255,.75);
-
-      --accent:#c9a96b;
-
-      --warn0: rgba(255,193,7,.10);
-      --warn1: rgba(255,193,7,.28);
+      --muted:rgba(232,242,255,.78);
+      --accent:#f2b134;
+      --info0:rgba(242,177,52,.10);
+      --info1:rgba(242,177,52,.25);
+      --inputBg:rgba(255,255,255,.06);
     }
+
+    *{box-sizing:border-box}
 
     body{
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       max-width:980px;
       margin:34px auto;
-      padding:0 16px;
+      padding:0 16px 30px;
       line-height:1.6;
       color:var(--text);
       background:
@@ -46,13 +54,13 @@
       justify-content:space-between;
       align-items:center;
       gap:12px;
-      margin-bottom:14px
+      margin-bottom:14px;
     }
 
     .titleRow{
       display:flex;
       align-items:center;
-      gap:12px
+      gap:12px;
     }
 
     .badgeIcon{
@@ -109,9 +117,63 @@
         0 1px 0 rgba(255,255,255,.05) inset;
     }
 
-    .warn{
-      background:var(--warn0);
-      border:1px solid var(--warn1);
+    .emailTextCard pre{
+      margin:10px 0 0;
+      white-space:pre-wrap;
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:14px;
+      color:rgba(232,242,255,.94);
+      font-family:inherit;
+      line-height:1.7;
+    }
+
+    .signatureCard{
+      background:var(--info0);
+      border:1px solid var(--info1);
+    }
+
+    .signatureTitle{
+      margin:0 0 8px;
+      font-size:20px;
+    }
+
+    .signatureText{
+      color:var(--muted);
+      margin:0 0 12px;
+      white-space:pre-line;
+    }
+
+    .inputWrap{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .label{
+      font-weight:700;
+    }
+
+    .nameInput{
+      width:100%;
+      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:var(--inputBg);
+      color:var(--text);
+      font-size:16px;
+      outline:none;
+    }
+
+    .nameInput::placeholder{
+      color:rgba(232,242,255,.45);
+    }
+
+    .inputHint{
+      color:var(--muted);
+      font-size:.95rem;
+      margin:0;
     }
 
     .panel{
@@ -161,7 +223,7 @@
       height:10px;
       border-radius:999px;
       background:var(--accent);
-      box-shadow:0 0 0 3px rgba(255,255,255,.06)
+      box-shadow:0 0 0 3px rgba(255,255,255,.06);
     }
 
     .meta{margin:10px 0 12px;color:var(--muted);position:relative}
@@ -209,10 +271,11 @@
     .files{margin-top:10px;color:var(--muted);font-size:.95rem}
     .error{color:#ffb4b4}
 
-    .hint{
-      margin-top:10px;
-      color:var(--muted);
-      font-size:.95rem;
+    @media (max-width:700px){
+      .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+      }
     }
   </style>
 </head>
@@ -230,15 +293,20 @@
     <button id="langBtn" class="langBtn" type="button"></button>
   </div>
 
-  <div class="card">
+  <div class="card emailTextCard">
     <h2 id="aboutTitle"></h2>
-    <p id="aboutText"></p>
+    <pre id="aboutText"></pre>
   </div>
 
-  <div class="card warn">
-    <b id="warnTitle"></b>
-    <span id="warnText" style="color:var(--muted)"></span>
-    <div class="hint" id="hostingHint"></div>
+  <div class="card signatureCard">
+    <h2 class="signatureTitle" id="signatureTitle"></h2>
+    <p class="signatureText" id="signatureNote"></p>
+
+    <div class="inputWrap">
+      <label class="label" id="nameLabel" for="fullName"></label>
+      <input id="fullName" class="nameInput" type="text" autocomplete="name" />
+      <p class="inputHint" id="nameHint"></p>
+    </div>
   </div>
 
   <section class="panel">
@@ -278,24 +346,45 @@
     fa: {
       dir:"rtl",
       title:"کمپین ایمیل اسپانیا",
-      subtitle:"با یک کلیک، پیش‌نویس آماده در برنامه ایمیل شما باز می‌شود.\nنیازی نیست قسمت «To» را پر کنید؛ همه گیرندگان در bcc هستند و لطفاً در پایان ایمیل نام خود را امضا کنید.",
-      warnTitle:"نکته مهم:",
-      aboutTitle:"درباره",
-      aboutText:"این صفحه بخشی از یک ابتکار مدنی است که به شهروندان کمک می‌کند تا به‌سادگی با اعضای پارلمان اسپانیا تماس بگیرند و توجه سیاسی بیشتری را به وضعیت ایران جلب کنند. هدف این اقدام اعلام حمایت از مبارزه مردم ایران برای آزادی، دموکراسی، حقوق بشر و حاکمیت قانون است. بسیاری از ایرانیان در داخل و خارج از کشور از شاهزاده رضا پهلوی به عنوان چهره‌ی اصلی حامی گذار دموکراتیک و مسالمت‌آمیز در ایران حمایت می‌کنند. با ارسال این ایمیل، شهروندان می‌توانند دولت‌های دموکراتیک را تشویق کنند تا صدای مردم ایران را بشنوند و از خواسته‌های آنان برای آینده‌ای آزاد و دموکراتیک حمایت کنند. این ابزار تنها یک پیش‌نویس ایمیل آماده می‌کند و تصمیم نهایی برای ارسال آن کاملاً بر عهده کاربر است.",
-      warnText:"مرورگرهای داخل اپ‌ها (Instagram/X/Telegram) اغلب mailto: را بلاک می‌کنند. اگر کار نکرد: لینک را در مرورگر اصلی (Safari/Chrome) باز کنید یا گزینه «Open in browser» را بزنید.",
-      hostingHint:"⚠️ این صفحه باید از GitHub Pages باز شود؛ وگرنه دکمه‌ها و فایل‌خوانی ممکن است کار نکند.",
+      subtitle:"با یک کلیک، پیش‌نویس آماده در برنامه ایمیل شما باز می‌شود.\nاولین گیرنده در قسمت To قرار می‌گیرد و بقیه گیرندگان در Bcc هستند.",
+      aboutTitle:"ترجمه متن ایمیل",
+      aboutText:`موضوع: آزادی و دموکراسی برای ایران
+
+متن:
+نمایندگان محترم پارلمان،
+مسئولان تصمیم‌گیرنده محترم،
+
+به‌عنوان یک شهروند ایرانی‌تبار مقیم اسپانیا، با یک موضوع سیاسی فوری خدمت شما نامه می‌نویسم.
+
+با توجه به تلاش‌های مداوم مردم ایران برای آزادی و حاکمیت قانون، خواستار حمایت قاطع و مستمر از این تحول تاریخی تا سقوط کامل جمهوری اسلامی هستم.
+
+در این راستا، بر تمامیت ارضی ایران به‌طور مطلق تأکید می‌کنم. هر نظم حکومتی آینده باید بر پایه اراده‌ی مستقل مردم ایران باشد و مطابق با استانداردهای حقوق بین‌الملل عمل کند.
+
+برای تضمین یک دوره گذار پایدار و جلوگیری از ایجاد خلأ قدرت، نقش مرکزی و هماهنگ‌کنندهٔ شاهزاده رضا پهلوی به‌عنوان رهبر مشروع یک دولت انتقالی را صریحاً برجسته می‌کنم. رهبری او برای نمایندگی اراده مردم ایران و تضمین گذار دموکراتیک حیاتی است.
+ایرانیان، همان‌طور که در سال‌های گذشته و به‌ویژه در دو ماه اخیر در اعتراضات داخلی و جهانی نشان داده‌اند، از رهبری شاهزاده رضا پهلوی و تیم ایشان حمایت می‌کنند و پشت او و برنامه‌هایش برای تغییر و اصلاحات دموکراتیک متحد شده‌اند.
+
+از شما درخواست می‌کنم که در چارچوب مأموریت خود تلاش کنید تا پادشاهی اسپانیا موضع سیاسی روشنی اتخاذ کرده و آزادی، حقوق بشر و تلاش‌های دموکراتیک مردم ایران را حمایت کند.
+
+با احترام،
+
+{امضا}`,
+      signatureTitle:"امضای شما",
+      signatureNote:"لطفاً نام خود را برای امضا وارد کنید تا به ایمیل ارزش و اعتبار بیشتری بدهد.\nما هیچ‌یک از این اطلاعات را در هیچ جایی ذخیره نمی‌کنیم، بنابراین نام شما محفوظ می‌ماند.\nدر صورت تمایل می‌توانید متن ایمیل را کمی تغییر دهید تا کاملاً تکراری نباشد.\nاگر برای کشورهای دیگر هم به این پلتفرم نیاز دارید، به ما اطلاع دهید.",
+      nameLabel:"نام کامل",
+      namePlaceholder:"نام خود را اینجا بنویسید",
+      nameHint:"این قسمت اختیاری است.",
       toggle:"🌐 EN",
 
       panelTitle:"ارسال ایمیل به اعضای پارلمان اسپانیا",
       panelGroup:"پارلمان اسپانیا",
       panelMeta:"گیرندگان: لیست ایمیل ۱ • متن: پیام ۱",
-      sendBtn:"✅ ارسال ایمیل (باز کردن پیش‌نویس)",
+      sendBtn:"✅ ارسال ایمیل",
       statusLabel:"وضعیت: ",
       loaded:(n)=>`بارگذاری شد: ${n} ایمیل`,
       bullets:[
         "پیش‌نویس ایمیل با گیرندگان آماده می‌شود.",
-        "ارسال نهایی با خود شماست (در اپ ایمیل).",
-        "به‌صورت پیش‌فرض از bcc استفاده می‌شود."
+        "اولین گیرنده در To و بقیه در Bcc قرار می‌گیرند.",
+        "در صورت وارد کردن نام، نام شما در پایان ایمیل اضافه می‌شود."
       ],
       previewSummary:"نمایش موضوع و متن ایمیل",
       subjectLabel:"موضوع:",
@@ -306,58 +395,46 @@
 
     en: {
       dir:"ltr",
-      title:"Email Campaign",
-      subtitle:"One click opens a ready draft in your email app.\nYou do not need to fill in the “To” field because all recipients are already included in BCC, and please sign your name at the end before sending.",
-      warnTitle:"Note (important):",
-      aboutTitle:"About this project",
-      aboutText:"This page is part of a civic initiative that helps citizens easily contact members of the Spanish Parliament and draw greater political attention to the situation in Iran. The goal of this initiative is to express support for the Iranian people's struggle for freedom, democracy, human rights, and the rule of law. Many Iranians inside and outside the country support Crown Prince Reza Pahlavi as the central figure advocating for a democratic and peaceful transition in Iran. By sending this email, citizens can encourage democratic governments to listen to the voices of the Iranian people and support their aspirations for a free and democratic future. This tool only prepares an email draft, and the final decision to send the email remains entirely with the user.",
-      warnText:"In-app browsers (Instagram/X/Telegram) often block mailto:. If it doesn’t work: open the link in Safari/Chrome or choose “Open in browser”.",
-      hostingHint:"⚠️ Open this page via GitHub Pages, otherwise the buttons / file loading may not work.",
-      toggle:"🌐 ES",
+      title:"Spain email campaign",
+      subtitle:"One click opens a ready draft in your email app.\nThe first recipient is placed in the To field and the remaining recipients are included in the Bcc field.",
+      aboutTitle:"Translation of the email message",
+      aboutText:`Subject: Freedom and democracy for Iran
+
+Body:
+
+Dear Members of Parliament,
+Dear Decision-Makers,
+
+As a citizen of Iranian origin residing in Spain, I am writing to you with an urgent political request. In light of the continued efforts of the Iranian people to achieve freedom and the rule of law, I call for consistent and unwavering support for this historic transformation process until the complete end of the Islamic Republic.
+
+At the same time, I emphasize the absolute inviolability of Iran’s territorial integrity. Any future political order must be based on the sovereign will of the Iranian people and comply with international legal standards.
+
+To ensure a stable transition period and to prevent a power vacuum, I emphasize the central and coordinating role of Crown Prince Reza Pahlavi as the legitimate leader of a transitional administration. His leadership is essential to represent the will of the Iranian people and to guide the democratic transition safely. As Iranians have demonstrated over the past years, and particularly in the past two months during protests both inside and outside the country, they support the leadership of Prince Reza Pahlavi and his team and stand united behind him and his plans for democratic change and reform.
+
+I respectfully urge you, within the scope of your mandate, to ensure that the Kingdom of Spain adopts a clear political stance and supports the freedom, human rights, and democratic aspirations of the Iranian people.
+
+Sincerely`,
+      signatureTitle:"Your signature",
+      signatureNote:"Please write your name for the signature to give more value to the email.\nWe do not save any of this data or your name anywhere, so you will be safe.\nFeel free to slightly change the email so it is not fully repetitive.\nIf you need to use this platform for other countries as well, please let us know.",
+      nameLabel:"Full name",
+      namePlaceholder:"Write your name here",
+      nameHint:"This field is optional.",
+      toggle:"🌐 FA",
 
       panelTitle:"Send email to members of the Spanish Parliament",
       panelGroup:"Spanish Parliament",
       panelMeta:"Recipients: email list 1 • Text: message 1",
-      sendBtn:"✅ Send email (open draft)",
+      sendBtn:"✅ Send email",
       statusLabel:"Status: ",
       loaded:(n)=>`Loaded: ${n} emails`,
       bullets:[
         "A draft email with recipients is prepared.",
-        "Final sending is up to you (in your email app).",
-        "By default, BCC is used."
+        "The first recipient goes in To and the rest go in Bcc.",
+        "If a name is entered, it is added at the end of the email."
       ],
-      previewSummary:"Show subject & body",
+      previewSummary:"Show subject and body",
       subjectLabel:"Subject:",
       files:"Files: mail1.txt + message1.txt",
-      dash:"—",
-      errorPrefix:"Error: "
-    },
-
-    es: {
-      dir:"ltr",
-      title:"Campaña de correo electrónico",
-      subtitle:"Con un clic, se abre un borrador preparado en tu aplicación de correo.\nNo necesitas rellenar el campo “To”, porque todos los destinatarios ya están incluidos en BCC, y por favor firma tu nombre al final antes de enviar.",
-      warnTitle:"Aviso importante:",
-      aboutTitle:"Sobre este proyecto",
-      aboutText:"Esta página forma parte de una iniciativa cívica que ayuda a los ciudadanos a contactar fácilmente a los miembros del Parlamento español y a generar mayor atención política sobre la situación en Irán. El objetivo de esta iniciativa es expresar apoyo a la lucha del pueblo iraní por la libertad, la democracia, los derechos humanos y el estado de derecho. Muchos iraníes, tanto dentro como fuera del país, apoyan al Príncipe heredero Reza Pahlavi como la figura principal que promueve una transición democrática y pacífica en Irán. Al enviar este correo electrónico, los ciudadanos pueden animar a los gobiernos democráticos a escuchar la voz del pueblo iraní y a apoyar sus aspiraciones hacia un futuro libre y democrático. Esta herramienta solo prepara un borrador de correo electrónico y la decisión final de enviarlo corresponde completamente al usuario.",
-      warnText:"Los navegadores integrados en aplicaciones (Instagram/X/Telegram) a menudo bloquean mailto:. Si no funciona, abre el enlace en Safari/Chrome o elige “Open in browser”.",
-      hostingHint:"⚠️ Abre esta página mediante GitHub Pages; de lo contrario, es posible que los botones o la carga de archivos no funcionen.",
-      toggle:"🌐 FA",
-
-      panelTitle:"Enviar correo a miembros del Parlamento español",
-      panelGroup:"Parlamento español",
-      panelMeta:"Destinatarios: lista de correos 1 • Texto: mensaje 1",
-      sendBtn:"✅ Enviar correo (abrir borrador)",
-      statusLabel:"Estado: ",
-      loaded:(n)=>`Cargados: ${n} correos`,
-      bullets:[
-        "Se prepara un borrador con los destinatarios.",
-        "El envío final depende de ti (en tu aplicación de correo).",
-        "Por defecto, se utiliza BCC."
-      ],
-      previewSummary:"Mostrar asunto y cuerpo",
-      subjectLabel:"Asunto:",
-      files:"Archivos: mail1.txt + message1.txt",
       dash:"—",
       errorPrefix:"Error: "
     }
@@ -383,12 +460,14 @@
 
     document.getElementById("pageTitle").textContent = t.title;
     document.getElementById("pageSubtitle").textContent = t.subtitle;
-    document.getElementById("warnTitle").textContent = t.warnTitle + " ";
-    document.getElementById("warnText").textContent = t.warnText;
-    document.getElementById("hostingHint").textContent = t.hostingHint;
-    document.getElementById("langBtn").textContent = t.toggle;
     document.getElementById("aboutTitle").textContent = t.aboutTitle;
     document.getElementById("aboutText").textContent = t.aboutText;
+    document.getElementById("signatureTitle").textContent = t.signatureTitle;
+    document.getElementById("signatureNote").textContent = t.signatureNote;
+    document.getElementById("nameLabel").textContent = t.nameLabel;
+    document.getElementById("fullName").placeholder = t.namePlaceholder;
+    document.getElementById("nameHint").textContent = t.nameHint;
+    document.getElementById("langBtn").textContent = t.toggle;
 
     document.getElementById("panelTitle").textContent = t.panelTitle;
     document.getElementById("pillLabel").textContent = t.panelGroup;
@@ -403,8 +482,12 @@
   }
 
   document.getElementById("langBtn").addEventListener("click", () => {
-    const next = (LANG === "fa") ? "en" : (LANG === "en") ? "es" : "fa";
+    const next = (LANG === "fa") ? "en" : "fa";
     setLang(next);
+  });
+
+  document.getElementById("fullName").addEventListener("input", () => {
+    renderPanel();
   });
 
   function normalizeEmails(text){
@@ -424,11 +507,29 @@
     return { subject, body };
   }
 
+  function getSignedBody(body){
+    const name = document.getElementById("fullName").value.trim();
+    if(!name) return body || "";
+    const safeBody = body || "";
+    return `${safeBody}\n\n${name}`;
+  }
+
   function buildMailto(emails, subject, body){
-    const bcc = encodeURIComponent(emails.join(","));
+    const to = emails[0] || "";
+    const bccList = emails.slice(1);
+
+    const toEncoded = encodeURIComponent(to);
+    const bccEncoded = encodeURIComponent(bccList.join(","));
     const s = encodeURIComponent(subject || "");
     const b = encodeURIComponent(body || "");
-    return `mailto:?bcc=${bcc}&subject=${s}&body=${b}`;
+
+    let url = `mailto:${toEncoded}?subject=${s}&body=${b}`;
+
+    if (bccList.length > 0) {
+      url += `&bcc=${bccEncoded}`;
+    }
+
+    return url;
   }
 
   function setPanelError(msg){
@@ -439,6 +540,7 @@
 
   function renderPanel(){
     const t = UI[LANG];
+    const finalBody = getSignedBody(PANEL.body);
 
     document.getElementById("status").textContent = PANEL.loaded ? t.loaded(PANEL.emails.length || 0) : t.loaded(0);
 
@@ -451,7 +553,7 @@
     }
 
     document.getElementById("previewSubject").textContent = PANEL.subject || t.dash;
-    document.getElementById("previewBody").textContent = PANEL.body || t.dash;
+    document.getElementById("previewBody").textContent = finalBody || t.dash;
 
     const ready = PANEL.loaded && PANEL.emails.length > 0 && (PANEL.subject.length > 0 || PANEL.body.length > 0) && !PANEL.error;
     document.getElementById("sendBtn").disabled = !ready;
@@ -490,7 +592,8 @@
 
   document.getElementById("sendBtn").addEventListener("click", () => {
     if(!PANEL.loaded || !PANEL.emails.length) return;
-    window.location.href = buildMailto(PANEL.emails, PANEL.subject, PANEL.body);
+    const finalBody = getSignedBody(PANEL.body);
+    window.location.href = buildMailto(PANEL.emails, PANEL.subject, finalBody);
   });
 
   (async function init(){
